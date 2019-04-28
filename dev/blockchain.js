@@ -30,7 +30,11 @@ Blockchain.prototype.getLastBlock = function() {
 
 // These are unvalidated and unmined transactions that need minning
 
-Blockchain.prototype.getLastBlock = function(amount, sender, recipient) {
+Blockchain.prototype.createNewTransaction = function(
+  amount,
+  sender,
+  recipient
+) {
   const newTransaction = {
     amount,
     sender,
@@ -39,7 +43,7 @@ Blockchain.prototype.getLastBlock = function(amount, sender, recipient) {
   this.pendingTransactions.push(newTransaction);
 
   //This will be the index of the block in which we will record our transactions
-  
+
   return this.getLastBlock()["index"] + 1;
 };
 
