@@ -1,7 +1,11 @@
+// creating a constructor
+
 function Blockchain() {
   this.chain = [];
   this.newTransactions = [];
 }
+
+//Nonce is the result of mathematical problem solved by user
 
 Blockchain.prototype.createNewBlock = function(nonce, previousBlockHash, hash) {
   const newBlock = {
@@ -14,5 +18,8 @@ Blockchain.prototype.createNewBlock = function(nonce, previousBlockHash, hash) {
   };
   this.newTransactions = [];
   this.chain.push(newBlock);
+
   return newBlock;
 };
+
+module.exports = Blockchain;
