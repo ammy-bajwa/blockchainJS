@@ -29,32 +29,46 @@ bitcoin.createNewBlock(
 
 // console logging the whole blockchain
 
+// console.log(
+//   "=========================  Bitcoin  ==============================="
+// );
+
+// console.log(bitcoin);
+
+// // console logging the block that has the first transaction
+
+// console.log(
+//   "=============================  Specific Block With One Transaction  ==========================="
+// );
+
+// console.log(bitcoin.chain[3]);
+
+// // console logging the block that has Multiple transaction
+
+// console.log(
+//   "=============================  Specific Block  With Multipe Transactions  ==========================="
+// );
+
+// console.log(bitcoin.chain[3]);
+
+// // console logging pending transactions
+
+// console.log(
+//   "=========================  Getting All Pending Transactions ==============================="
+// );
+
+// console.log(bitcoin.pendingTransactions);
+
 console.log(
-  "=========================  Bitcoin  ==============================="
+  bitcoin.hashBlock(
+    "32KFDFH4H83FH",
+    [
+      {
+        sender: "323HBF#HFSJJ",
+        recipient: "56rtHBF#HFSJJ",
+        amout: 566
+      }
+    ],
+    324234
+  )
 );
-
-console.log(bitcoin);
-
-// console logging the block that has the first transaction
-
-console.log(
-  "=============================  Specific Block With One Transaction  ==========================="
-);
-
-console.log(bitcoin.chain[3]);
-
-// console logging the block that has Multiple transaction
-
-console.log(
-  "=============================  Specific Block  With Multipe Transactions  ==========================="
-);
-
-console.log(bitcoin.chain[3]);
-
-// console logging pending transactions
-
-console.log(
-  "=========================  Getting All Pending Transactions ==============================="
-);
-
-console.log(bitcoin.pendingTransactions);
