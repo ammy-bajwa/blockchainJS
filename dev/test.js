@@ -72,3 +72,13 @@ console.log(
     324234
   )
 );
+
+console.log(
+  bitcoin.proofOfWork("32KFDFH4H83FH", [
+    {
+      sender: "323HBF#HFSJJ",
+      recipient: "56rtHBF#HFSJJ",
+      amout: 566
+    }
+  ])
+);
