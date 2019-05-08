@@ -55,6 +55,7 @@ Blockchain.prototype.hashBlock = function(
   currrentBlockData,
   nonce
 ) {
+  // Creating string for the sha256 Algorithm to generate hash
   const dataAsString =
     previousBlockHash + nonce.toString() + JSON.stringify(currrentBlockData);
   const hash = sha256(dataAsString);
@@ -72,7 +73,7 @@ Blockchain.prototype.proofOfWork = function(
   while (hash.substring(0, 4) !== "0000") {
     nonce++;
     hash = this.hashBlock(previousBlockHash, currrentBlockData, nonce);
-    console.log(hash)
+    console.log(hash);
   }
   return nonce;
 };
