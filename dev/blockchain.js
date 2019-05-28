@@ -4,6 +4,7 @@ const sha256 = require("sha256");
 function Blockchain() {
   this.chain = [];
   this.pendingTransactions = [];
+  this.createNewBlock(100, "0", "0");
 }
 
 //Nonce is the result of mathematical problem solved by user
@@ -70,7 +71,7 @@ Blockchain.prototype.proofOfWork = function(
 ) {
   let nonce = 0;
   let hash = this.hashBlock(previousBlockHash, currrentBlockData, nonce);
-  while (hash.substring(0, 4) !== "0000") {
+  while (hash.substring(0, 2) !== "00") {
     nonce++;
     hash = this.hashBlock(previousBlockHash, currrentBlockData, nonce);
     console.log(hash);

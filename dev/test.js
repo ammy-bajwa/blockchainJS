@@ -21,11 +21,11 @@ bitcoin.createNewTransaction(300, "AMIRGH76SJFG7634", "ZAFAR243HGF24343U");
 bitcoin.createNewTransaction(400, "AMIRGH76SJFG7634", "ZAFAR243HGF24343U");
 bitcoin.createNewTransaction(500, "AMIRGH76SJFG7634", "ZAFAR243HGF24343U");
 
-bitcoin.createNewBlock(
-  23443342,
-  "SJKHDFKJ347HSKJD78864TG#$778",
-  "489HSDFJSHGF673344TUYFDG"
-);
+// bitcoin.createNewBlock(
+//   23443342,
+//   "SJKHDFKJ347HSKJD78864TG#$778",
+//   "489HSDFJSHGF673344TUYFDG"
+// );
 
 // console logging the whole blockchain
 
