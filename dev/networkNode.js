@@ -148,7 +148,26 @@ app.post("/register_and_broadcast_node", (req, res) => {
 });
 
 // Registering Node for each of the network node seperatly
-app.post("/register_node", (req, res) => {});
+app.post("/register_node", (req, res) => {
+  // Getting the url of new network node
+  const newNodeUrl = req.body.newNodeUrl;
+
+  // Getting all the registered nodes
+  let allNetworkNodes = bitcoin.networkNodes;
+
+  // Checking if the node alredy there
+  // If not register that
+  if (
+    allNetworkNodes.indexOf(newNodeUrl) === -1 &&
+    newNodeUrl !== bitcoin.currentNodeUrl
+  ) {
+    // Putting the new node url in the main blockchain network array
+    allNetworkNodes.push(newNodeUrl);
+  }
+  res.json({
+    note: "New node registered successfully."
+  });
+});
 
 // Registering Multiple Nodes at once
 app.post("/register_nodes_bulk", (req, res) => {});
