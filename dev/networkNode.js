@@ -9,7 +9,9 @@ const Blockchain = require("./blockchain");
 let bitcoin = new Blockchain();
 
 // Specifying the port number on which server runs
-const port = 3000;
+// args just specify the argument we pas in package.json file
+// while starting the server
+const port = process.argv[2];
 
 // Getting uuid library to generate random address for network node
 const uuid = require("uuid/v1");

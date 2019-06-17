@@ -1,14 +1,25 @@
 const sha256 = require("sha256");
-// creating a constructor
+const currentNodeUrl = process.argv[3];
 
+// creating a constructor
 function Blockchain() {
+  // Main blocks array
   this.chain = [];
+
+  // Setting the node url for each instance of node
+  this.currentNodeUrl = currentNodeUrl;
+
+  // Storing all the active nodes
+  this.networkNodes = []; 
+
+  // Store all the pending transactions
   this.pendingTransactions = [];
+
+  // Creating genesis block blockchain
   this.createNewBlock(100, "0", "0");
 }
 
 //Nonce is the result of mathematical problem solved by user
-
 Blockchain.prototype.createNewBlock = function(nonce, previousBlockHash, hash) {
   const newBlock = {
     index: this.chain.length + 1,
@@ -25,13 +36,11 @@ Blockchain.prototype.createNewBlock = function(nonce, previousBlockHash, hash) {
 };
 
 //To get last block from the blockchain
-
 Blockchain.prototype.getLastBlock = function() {
   return this.chain[this.chain.length - 1];
 };
 
 // These are unvalidated and unmined transactions that need minning
-
 Blockchain.prototype.createNewTransaction = function(
   amount,
   sender,
@@ -45,12 +54,10 @@ Blockchain.prototype.createNewTransaction = function(
   this.pendingTransactions.push(newTransaction);
 
   //This will be the index of the block in which we will record our transactions
-
   return this.getLastBlock()["index"] + 1;
 };
 
-///Hashing a block method using sha256
-
+//Hashing a block method using sha256
 Blockchain.prototype.hashBlock = function(
   previousBlockHash,
   currrentBlockData,
@@ -64,7 +71,6 @@ Blockchain.prototype.hashBlock = function(
 };
 
 //Adding Proof of work method
-
 Blockchain.prototype.proofOfWork = function(
   previousBlockHash,
   currrentBlockData
