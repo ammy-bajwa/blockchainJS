@@ -20,6 +20,12 @@ const nodeAddress = uuid()
   .split("-")
   .join("");
 
+// Library to send requests
+const axios = require("axios");
+
+// Allowing crose origin requests
+var cors = require("cors");
+
 // Adding body parser as a middlewear to
 // all the requests send to server
 // Its makes extracting the data from the request easy
@@ -34,6 +40,9 @@ app.use(
 
 // parse application/json
 app.use(bodyParser.json());
+
+// Initializing cors
+app.use(cors());
 
 // Sending back our complete blockchain to the client
 app.get("/blockchain", (req, res) => res.send(bitcoin));
@@ -95,14 +104,53 @@ app.get("/mine", (req, res) => {
 app.post("/register_and_broadcast_node", (req, res) => {
   // Getting the url of new network node
   const newNodeUrl = req.body.newNodeUrl;
+
+  // Getting all the registered nodes
+  let allNetworkNodes = bitcoin.networkNodes;
+
+  // Checking if the node alredy there
+  // If not register that
+  if (allNetworkNodes.indexOf(newNodeUrl) === -1) {
+    // Putting the new node url in the main blockchain network array
+    allNetworkNodes.push(newNodeUrl);
+  }
+
+  // Broadcasting our node to the all other network nodes
+  let regNodesPromises = [];
+
+  //Registering the new node with already present nodes
+  allNetworkNodes.forEach(networkNodeUrl => {
+    //Sending promise request to each networkUrl seperatly
+    const newRegisterPromiseRequest = axios.post(
+      `${networkNodeUrl}/register_node`,
+      {
+        newNodeUrl
+      }
+    );
+
+    // Pushing the promise to the promises array
+    regNodesPromises.push(newRegisterPromiseRequest);
+  });
+
+  // Executing all the promises
+  Promise.all(regNodesPromises)
+    .then(data => {
+      // Registering all the nodes with the new node
+      return axios.post(`${newNodeUrl}/register_nodes_bulk`, {
+        allNetworkNodes: [...bitcoin.networkNodes, bitcoin.currentNodeUrl]
+      });
+    })
+    .then(data =>
+      res.json({
+        note: "New node registered to the network successfully."
+      })
+    );
 });
 
 // Registering Node for each of the network node seperatly
-app.post("/register_node", (req, res) => {
-});
+app.post("/register_node", (req, res) => {});
 
 // Registering Multiple Nodes at once
-app.post("/register_nodes_bulk", (req, res) => {
-});
+app.post("/register_nodes_bulk", (req, res) => {});
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
