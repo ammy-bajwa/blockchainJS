@@ -54,18 +54,34 @@ app.post("/transaction", (req, res) => {
     note: `Transaction will be added in block ${blockIndex}.`
   });
 });
+
+// Adding route so we can mine the pending transactions
 app.get("/mine", (req, res) => {
+  // Getting last block of the blockchain
   const lastBlock = bitcoin.getLastBlock();
+
+  // Getting hash of the last block
   const prevBlockHash = lastBlock["hash"];
+
+  // Creating data structure for our current block
   const currentBlockData = {
     transactions: bitcoin.pendingTransactions,
     index: lastBlock["index"] + 1
   };
+
+  // Getting the mathematical result
   const nonce = bitcoin.proofOfWork(prevBlockHash, currentBlockData);
+
+  // Hashing the new block
   const blockHash = bitcoin.hashBlock(prevBlockHash, currentBlockData, nonce);
+
+  // Creating the new block
   const newBlock = bitcoin.createNewBlock(nonce, prevBlockHash, blockHash);
 
+  // Adding reward transaction to the network who mined the block
   bitcoin.createNewTransaction(12.5, "00", nodeAddress);
+
+  // Just sending back the newly created block
   res.json({
     note: "New block mined successfully",
     block: newBlock
