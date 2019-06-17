@@ -12,14 +12,14 @@ bitcoin.createNewTransaction(100, "AMIRGH76SJFG7634", "ZAFAR243HGF24343U");
 
 //Last transaction will be availale in this block
 
-bitcoin.createNewBlock(43342, "HSKJD78864TG#$778", "SHGF673344TUYFDG");
+// bitcoin.createNewBlock(43342, "HSKJD78864TG#$778", "SHGF673344TUYFDG");
 
-//Some pending transactions
+// //Some pending transactions
 
-bitcoin.createNewTransaction(200, "AMIRGH76SJFG7634", "ZAFAR243HGF24343U");
-bitcoin.createNewTransaction(300, "AMIRGH76SJFG7634", "ZAFAR243HGF24343U");
-bitcoin.createNewTransaction(400, "AMIRGH76SJFG7634", "ZAFAR243HGF24343U");
-bitcoin.createNewTransaction(500, "AMIRGH76SJFG7634", "ZAFAR243HGF24343U");
+// bitcoin.createNewTransaction(200, "AMIRGH76SJFG7634", "ZAFAR243HGF24343U");
+// bitcoin.createNewTransaction(300, "AMIRGH76SJFG7634", "ZAFAR243HGF24343U");
+// bitcoin.createNewTransaction(400, "AMIRGH76SJFG7634", "ZAFAR243HGF24343U");
+// bitcoin.createNewTransaction(500, "AMIRGH76SJFG7634", "ZAFAR243HGF24343U");
 
 // bitcoin.createNewBlock(
 //   23443342,
@@ -57,28 +57,28 @@ bitcoin.createNewTransaction(500, "AMIRGH76SJFG7634", "ZAFAR243HGF24343U");
 //   "=========================  Getting All Pending Transactions ==============================="
 // );
 
-// console.log(bitcoin.pendingTransactions);
+console.log(bitcoin.getLastBlock());
 
-console.log(
-  bitcoin.hashBlock(
-    "32KFDFH4H83FH",
-    [
-      {
-        sender: "323HBF#HFSJJ",
-        recipient: "56rtHBF#HFSJJ",
-        amout: 566
-      }
-    ],
-    324234
-  )
-);
+// console.log(
+//   bitcoin.hashBlock(
+//     "32KFDFH4H83FH",
+//     [
+//       {
+//         sender: "323HBF#HFSJJ",
+//         recipient: "56rtHBF#HFSJJ",
+//         amout: 566
+//       }
+//     ],
+//     324234
+//   )
+// );
 
-console.log(
-  bitcoin.proofOfWork("32KFDFH4H83FH", [
-    {
-      sender: "323HBF#HFSJJ",
-      recipient: "56rtHBF#HFSJJ",
-      amout: 566
-    }
-  ])
-);
+// console.log(
+//   bitcoin.proofOfWork("32KFDFH4H83FH", [
+//     {
+//       sender: "323HBF#HFSJJ",
+//       recipient: "56rtHBF#HFSJJ",
+//       amout: 566
+//     }
+//   ])
+// );
