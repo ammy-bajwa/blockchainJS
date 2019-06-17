@@ -14,7 +14,10 @@ app.use(
 app.use(bodyParser.json());
 
 app.get("/blockchain", (req, res) => res.send("Hello World!"));
-app.post("/transaction", (req, res) => res.send("Hello World!"));
+app.post("/transaction", (req, res) => {
+  console.log(req.body);
+  res.send(`Amount is ${req.body.amount} and sender is ${req.body.sender}`);
+});
 app.get("/mine", (req, res) => res.send("Hello World!"));
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
