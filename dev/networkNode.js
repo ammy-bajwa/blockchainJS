@@ -170,6 +170,27 @@ app.post("/register_node", (req, res) => {
 });
 
 // Registering Multiple Nodes at once
-app.post("/register_nodes_bulk", (req, res) => {});
+app.post("/register_nodes_bulk", (req, res) => {
+  // Extracting all the nodes from the request
+  const allNetworkNodes = req.body.allNetworkNodes;
+
+  // Getting each node url seperatly
+  allNetworkNodes.forEach(networkNodeUrl => {
+    // Checking if the node is already there
+    const nodeAlredyPresent = bitcoin.networkNodes.indexOf(networkNodeUrl);
+
+    // Checking if the node is current node
+    const notCurrentNode = bitcoin.currentNodeUrl !== networkNodeUrl;
+
+    // If node is not present and not is not current node then
+    // we will add this to our network nodes array
+    if (nodeAlredyPresent && notCurrentNode) {
+      bitcoin.networkNodes.push(networkNodeUrl);
+    }
+  });
+  res.json({
+    note: "Bulk registeration successful."
+  });
+});
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
