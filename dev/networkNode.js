@@ -90,4 +90,19 @@ app.get("/mine", (req, res) => {
   });
 });
 
+// Registering a new network node and broadcasting that
+// node to the whole network
+app.post("/register_and_broadcast_node", (req, res) => {
+  // Getting the url of new network node
+  const newNodeUrl = req.body.newNodeUrl;
+});
+
+// Registering Node for each of the network node seperatly
+app.post("/register_node", (req, res) => {
+});
+
+// Registering Multiple Nodes at once
+app.post("/register_nodes_bulk", (req, res) => {
+});
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
