@@ -66,6 +66,50 @@ app.post("/transaction", (req, res) => {
   });
 });
 
+app.post("/transaction/broadcast", (req, res) => {
+  // Extracting amount from the request
+  let amount = req.body.amount,
+    // Extracting sender and recipient
+    sender = req.body.sender,
+    recipient = req.body.recipient,
+    // Geting all network nodes for broadcasting transaction
+    allNetworkNodes = bitcoin.networkNodes;
+
+  // Getting the transaction index number
+  const newTransaction = bitcoin.createNewTransaction(
+    amount,
+    sender,
+    recipient
+  );
+
+  bitcoin.addTransactionToPendingTransactions.push(newTransaction);
+
+  // Broadcasting our transaction to the all other network nodes
+  let regTransactionPromises = [];
+
+  //Registering the new node with already present nodes
+  allNetworkNodes.forEach(networkNodeUrl => {
+    //Sending promise request to each networkUrl seperatly
+    const newRegisterPromiseRequest = axios.post(
+      `${networkNodeUrl}/transaction`,
+      {
+        newTransaction
+      }
+    );
+
+    // Pushing the promise to the promises array
+    regTransactionPromises.push(newRegisterPromiseRequest);
+  });
+
+  // Executing all the promises
+  Promise.all(regTransactionPromises).then(data => {
+    // Sending back transaction index to the client
+    res.json({
+      note: `Transaction is broadcasted to all network nodes successfully.`
+    });
+  });
+});
+
 // Adding route so we can mine the pending transactions
 app.get("/mine", (req, res) => {
   // Getting last block of the blockchain
