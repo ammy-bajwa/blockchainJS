@@ -51,14 +51,13 @@ app.get("/blockchain", (req, res) => res.send(bitcoin));
 // we wil add the create the new transaction and send back the
 // index on which that transaction will be added after proof of work
 app.post("/transaction", (req, res) => {
-  // Extracting amount from the request
-  let amount = req.body.amount,
-    // Extracting sender and recipient
-    sender = req.body.sender,
-    recipient = req.body.recipient;
+  // Extracting newTransaction from the request
+  const newTransaction = req.body.newTransaction;
 
   // Getting the transaction index number
-  const blockIndex = bitcoin.createNewTransaction(amount, sender, recipient);
+  const blockIndex = bitcoin.addTransactionToPendingTransactions(
+    newTransaction
+  );
 
   // Sending back transaction index to the client
   res.json({
@@ -82,8 +81,7 @@ app.post("/transaction/broadcast", (req, res) => {
     recipient
   );
 
-  bitcoin.addTransactionToPendingTransactions.push(newTransaction);
-
+  bitcoin.addTransactionToPendingTransactions(newTransaction);
   // Broadcasting our transaction to the all other network nodes
   let regTransactionPromises = [];
 
