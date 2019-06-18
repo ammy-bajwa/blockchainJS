@@ -134,10 +134,33 @@ app.get("/mine", (req, res) => {
   // Adding reward transaction to the network who mined the block
   bitcoin.createNewTransaction(12.5, "00", nodeAddress);
 
-  // Just sending back the newly created block
-  res.json({
-    note: "New block mined successfully",
-    block: newBlock
+  // Geting all network nodes for broadcasting new block
+  allNetworkNodes = bitcoin.networkNodes;
+
+  // Broadcasting our new block to the all other network nodes
+  let regTransactionPromises = [];
+
+  //Registering the new block with already present nodes
+  allNetworkNodes.forEach(networkNodeUrl => {
+    //Sending promise request to each networkUrl seperatly
+    const newRegisterPromiseRequest = axios.post(
+      `${networkNodeUrl}/recieve_new_block`,
+      {
+        newBlock
+      }
+    );
+
+    // Pushing the promise to the promises array
+    regTransactionPromises.push(newRegisterPromiseRequest);
+  });
+
+  // Executing all the promises
+  Promise.all(regTransactionPromises).then(data => {
+    // Just sending back the newly created block
+    res.json({
+      note: "New block mined successfully",
+      block: newBlock
+    });
   });
 });
 
