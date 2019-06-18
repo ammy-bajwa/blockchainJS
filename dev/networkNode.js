@@ -141,7 +141,7 @@ app.get("/mine", (req, res) => {
   allNetworkNodes.forEach(networkNodeUrl => {
     //Sending promise request to each networkUrl seperatly
     const newRegisterPromiseRequest = axios.post(
-      `${networkNodeUrl}/recieve_new_block`,
+      `${networkNodeUrl}/receive_new_block`,
       {
         newBlock
       }
@@ -164,10 +164,42 @@ app.get("/mine", (req, res) => {
     .then(data => {
       // Just sending back the newly created block
       res.json({
-        note: "New block mined successfully",
+        note: "New block mined and broadcast successfully",
         block: newBlock
       });
     });
+});
+
+// This endpoint will receive new block and reset the pending transactions
+app.post("/receive_new_block", (req, res) => {
+  // Extracting new block from the request
+  const newBlock = req.body.newBlock;
+
+  // Getting the last block
+  const lastBlock = bitcoin.getLastBlock();
+
+  // Authenticating with hashes
+  const currectHash = lastBlock.hash === newBlock.previousBlockHash;
+
+  // Authenticating with index
+  const currectIndex = lastBlock["index"] + 1 === newBlock["index"];
+
+  if (currectHash && currectIndex) {
+    // Adding new block to our blockchain
+    bitcoin.chain.push(newBlock);
+
+    //Setting the pendingTransactions to default
+    bitcoin.pendingTransactions = []; 
+    res.json({
+      note: "New block received and accepted.",
+      newBlock
+    });
+  } else {
+    res.json({
+      note: "New block rejected.",
+      newBlock
+    });
+  }
 });
 
 // Registering a new network node and broadcasting that
