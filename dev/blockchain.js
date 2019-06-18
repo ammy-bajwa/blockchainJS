@@ -1,6 +1,9 @@
 const sha256 = require("sha256");
 const currentNodeUrl = process.argv[3];
 
+// Getting uuid library to generate random address for network node
+const uuid = require("uuid/v1");
+
 // creating a constructor
 function Blockchain() {
   // Main blocks array
@@ -10,7 +13,7 @@ function Blockchain() {
   this.currentNodeUrl = currentNodeUrl;
 
   // Storing all the active nodes
-  this.networkNodes = []; 
+  this.networkNodes = [];
 
   // Store all the pending transactions
   this.pendingTransactions = [];
@@ -49,10 +52,22 @@ Blockchain.prototype.createNewTransaction = function(
   const newTransaction = {
     amount,
     sender,
-    recipient
-  };
-  this.pendingTransactions.push(newTransaction);
+    recipient,
 
+    //Adding transaction id
+    transactionId: uuid()
+      .split("-")
+      .join("")
+  };
+
+  return newTransaction;
+};
+
+// Adding transaction to pending transactions
+Blockchain.prototype.addTransactionToPendingTransactions = function(
+  newTransaction
+) {
+  this.pendingTransactions.push(newTransaction);
   //This will be the index of the block in which we will record our transactions
   return this.getLastBlock()["index"] + 1;
 };
