@@ -297,7 +297,7 @@ app.post("/register_nodes_bulk", (req, res) => {
 });
 
 // Doing consensus endpoint to make sure a blockchain is valid
-app.post("/consensus", (req, res) => {
+app.get("/consensus", (req, res) => {
   // Extracting all the nodes from the request
   const allNetworkNodes = bitcoin.networkNodes;
 
@@ -307,43 +307,62 @@ app.post("/consensus", (req, res) => {
   //Registering the new node with already present nodes
   allNetworkNodes.forEach(networkNodeUrl => {
     //Sending promise request to each networkUrl seperatly
-    const newRegisterPromiseRequest = axios.post(
-      `${networkNodeUrl}/blockchain`
-    );
-
+    const newRegisterPromiseRequest = axios.get(`${networkNodeUrl}/blockchain`);
     // Pushing the promise to the promises array
     regNodesPromises.push(newRegisterPromiseRequest);
   });
 
   // Executing all the promises
-  Promise.all(regNodesPromises).then(blockchains => {
-    const currentChainLength = bitcoin.chain.length;
-    let maxChainLength = currentChainLength;
-    let newLongestChain = null;
-    let newPendingTransactions = null;
-    blockchains.forEach(blockchain => {
-      let chainLength = blockchain.chain.length;
-      if (chainLength > maxChainLength) {
-        maxChainLength = chainLength;
-        newLongestChain = blockchain.chain;
-        newPendingTransactions = blockchain.pendingTransactions;
+  Promise.all(regNodesPromises)
+    .then(blockchains => {
+      const currentChainLength = bitcoin.chain.length;
+      let maxChainLength = currentChainLength;
+      let newLongestChain = null;
+      let newPendingTransactions = null;
+
+      // Extracting out out blockchains from the response
+      blockchains = blockchains.map(response => response.data);
+
+      // Performing a for each to iterate through all the blockchain array
+      blockchains.forEach(blockchain => {
+        let chainLength = blockchain.chain.length;
+
+        // Setting up maxlength chain
+        if (chainLength > maxChainLength) {
+          maxChainLength = chainLength;
+          newLongestChain = blockchain.chain;
+          newPendingTransactions = blockchain.pendingTransactions;
+        }
+      });
+
+      // Checking the validity of the chain
+      if (
+        !newLongestChain ||
+        (newLongestChain && !bitcoin.chainIsValid(newLongestChain))
+      ) {
+        res.json({
+          note: "Current chain has not been replaced",
+          chain: bitcoin.chain
+        });
       }
-    });
-    const newLongestChainValidity = bitcoin.chainIsValid(newLongestChain);
-    if (!newLongestChain || (newLongestChain && !newLongestChainValidity)) {
+
+      // Checking the validity of the chain
+      else if (newLongestChain && bitcoin.chainIsValid(newLongestChain)) {
+        // Updating values of out current blockchian
+        bitcoin.chain = newLongestChain;
+        bitcoin.pendingTransactions = newPendingTransactions;
+        res.json({
+          note: "Current chain has been replaced Successfully",
+          chain: bitcoin.chain
+        });
+      }
+    })
+    .catch(error =>
       res.json({
         note: "Current chain has not been replaced",
-        chain: bitcoin.chain
-      });
-    } else if (newLongestChain && newLongestChainValidity) {
-      bitcoin.chain = newLongestChain;
-      bitcoin.pendingTransactions = newPendingTransactions;
-      res.json({
-        note: "Current chain has not been replaced",
-        chain: bitcoin.chain
-      });
-    }
-  });
+        error: error
+      })
+    );
 });
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
