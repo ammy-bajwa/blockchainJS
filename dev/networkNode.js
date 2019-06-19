@@ -189,7 +189,7 @@ app.post("/receive_new_block", (req, res) => {
     bitcoin.chain.push(newBlock);
 
     //Setting the pendingTransactions to default
-    bitcoin.pendingTransactions = []; 
+    bitcoin.pendingTransactions = [];
     res.json({
       note: "New block received and accepted.",
       newBlock
@@ -293,6 +293,56 @@ app.post("/register_nodes_bulk", (req, res) => {
   });
   res.json({
     note: "Bulk registeration successful."
+  });
+});
+
+// Doing consensus endpoint to make sure a blockchain is valid
+app.post("/consensus", (req, res) => {
+  // Extracting all the nodes from the request
+  const allNetworkNodes = bitcoin.networkNodes;
+
+  // Storing all nodes blockchain promise
+  let regNodesPromises = [];
+
+  //Registering the new node with already present nodes
+  allNetworkNodes.forEach(networkNodeUrl => {
+    //Sending promise request to each networkUrl seperatly
+    const newRegisterPromiseRequest = axios.post(
+      `${networkNodeUrl}/blockchain`
+    );
+
+    // Pushing the promise to the promises array
+    regNodesPromises.push(newRegisterPromiseRequest);
+  });
+
+  // Executing all the promises
+  Promise.all(regNodesPromises).then(blockchains => {
+    const currentChainLength = bitcoin.chain.length;
+    let maxChainLength = currentChainLength;
+    let newLongestChain = null;
+    let newPendingTransactions = null;
+    blockchains.forEach(blockchain => {
+      let chainLength = blockchain.chain.length;
+      if (chainLength > maxChainLength) {
+        maxChainLength = chainLength;
+        newLongestChain = blockchain.chain;
+        newPendingTransactions = blockchain.pendingTransactions;
+      }
+    });
+    const newLongestChainValidity = bitcoin.chainIsValid(newLongestChain);
+    if (!newLongestChain || (newLongestChain && !newLongestChainValidity)) {
+      res.json({
+        note: "Current chain has not been replaced",
+        chain: bitcoin.chain
+      });
+    } else if (newLongestChain && newLongestChainValidity) {
+      bitcoin.chain = newLongestChain;
+      bitcoin.pendingTransactions = newPendingTransactions;
+      res.json({
+        note: "Current chain has not been replaced",
+        chain: bitcoin.chain
+      });
+    }
   });
 });
 
