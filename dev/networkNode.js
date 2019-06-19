@@ -364,5 +364,14 @@ app.get("/consensus", (req, res) => {
       })
     );
 });
+// At this end point we will be searching a block using it`s hash
+app.get("/block/:blockHash", (req, res) => {});
+
+// At this end point we will be searching a transaction using it`s id
+app.get("/transaction/:transactionId", (req, res) => {});
+
+// At this end point we will be searching a note using it`s address
+// and see how many coins it has
+app.get("/address/:address", (req, res) => {});
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
