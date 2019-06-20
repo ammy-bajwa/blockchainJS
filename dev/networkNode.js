@@ -392,6 +392,15 @@ app.get("/transaction/:transactionId", (req, res) => {
 
 // At this end point we will be searching a note using it`s address
 // and see how many coins it has
-app.get("/address/:address", (req, res) => {});
+app.get("/address/:address", (req, res) => {
+  // Extracting out the address from the url
+  const address = req.params.address;
+
+  // Getting the address data using the getAddressData method
+  const addressData = bitcoin.getAddressData(address);
+
+  // Returning back the block to the user
+  res.json(addressData);
+});
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
