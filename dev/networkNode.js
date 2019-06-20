@@ -400,7 +400,12 @@ app.get("/address/:address", (req, res) => {
   const addressData = bitcoin.getAddressData(address);
 
   // Returning back the block to the user
-  res.json(addressData);
+  res.json({ addressData });
 });
 
+// Responding UI
+app.get("/", (req, res) => {
+  // Returning the html file we want to render
+  res.sendFile("./ui/index.html", { root: __dirname });
+});
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
