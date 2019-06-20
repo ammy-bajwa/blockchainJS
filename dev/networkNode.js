@@ -379,7 +379,16 @@ app.get("/block/:blockHash", (req, res) => {
 });
 
 // At this end point we will be searching a transaction using it`s id
-app.get("/transaction/:transactionId", (req, res) => {});
+app.get("/transaction/:transactionId", (req, res) => {
+  // Extracting out the transactionId from the url
+  const transactionId = req.params.transactionId;
+
+  // Getting the block using the getBlock method
+  const transactionData = bitcoin.getTransaction(transactionId);
+
+  // Returning back the block to the user
+  res.json(transactionData);
+});
 
 // At this end point we will be searching a note using it`s address
 // and see how many coins it has
