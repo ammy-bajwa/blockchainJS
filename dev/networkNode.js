@@ -365,7 +365,18 @@ app.get("/consensus", (req, res) => {
     );
 });
 // At this end point we will be searching a block using it`s hash
-app.get("/block/:blockHash", (req, res) => {});
+app.get("/block/:blockHash", (req, res) => {
+  // Extracting out the block hash from the url
+  const blockHash = req.params.blockHash;
+
+  // Getting the block using the getBlock method
+  const currectBlock = bitcoin.getBlock(blockHash);
+
+  // Returning back the block to the user
+  res.json({
+    block: currectBlock
+  });
+});
 
 // At this end point we will be searching a transaction using it`s id
 app.get("/transaction/:transactionId", (req, res) => {});
