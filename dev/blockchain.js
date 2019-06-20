@@ -152,4 +152,21 @@ Blockchain.prototype.chainIsValid = function(blockchain) {
   return validChain;
 };
 
+// Getting a specific block using the block hash property
+Blockchain.prototype.getBlock = function(blockHash) {
+  // Here we will store if we have a block
+  let currectBlock = null;
+
+  // Iterating over the chain array inside the blockchain
+  this.chain.forEach(block => {
+    // comparing the block hash and given hass
+    if (block.hash === blockHash) {
+      // Assigning the found block
+      currectBlock = block;
+    }
+  });
+
+  // Returning the block if found else null
+  return currectBlock;
+};
 module.exports = Blockchain;
