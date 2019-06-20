@@ -169,4 +169,30 @@ Blockchain.prototype.getBlock = function(blockHash) {
   // Returning the block if found else null
   return currectBlock;
 };
+
+// Getting a specific transaction using the transactionId property
+Blockchain.prototype.getTransaction = function(transactionId) {
+  // Here we will store if we have a transaction
+  let currectTransaction = null;
+  let currectBlock = null;
+
+  // Iterating over the chain array inside the blockchain
+  this.chain.forEach(block => {
+    // Iterating over each transaction array inside the block
+    block.transactions.forEach(transaction => {
+      // comparing ids of each of the transaction
+      if (transaction.transactionId === transactionId) {
+        // Assigning currect transaction and block
+        currectTransaction = transaction;
+        currectBlock = block;
+      }
+    });
+  });
+
+  // Returning the transaction and block if found else null
+  return {
+    transaction: currectTransaction,
+    block: currectBlock
+  };
+};
 module.exports = Blockchain;
