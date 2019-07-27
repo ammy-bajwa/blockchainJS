@@ -406,6 +406,6 @@ app.get("/address/:address", (req, res) => {
 // Responding UI
 app.get("/", (req, res) => {
   // Returning the html file we want to render
-  res.sendFile("./ui/index.html", { root: __dirname });
+  res.sendFile("./ui/build/index.html", { root: __dirname });
 });
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));

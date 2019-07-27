@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>Block Explorer</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+      integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    />
+  </head>
+
+  <body ng-app="BlockExplorer">
+    <div id="root"></div>
+    <div class="area">
+      <ul class="circles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+      </ul>
+    </div>
+    <div class="container" ng-controller="MainController">
+      <div class="row">
+        <div class="col-md-8 offset-md-2">
+          <h1 id="page-title">Block Explorer</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 offset-md-3">
+          <form ng-submit="search(searchValue)">
+            <div class="form-group">
+              <input type="text" class="form-control" ng-model="searchValue" />
+            </div>
+            <div class="form-group">
+              <select class="form-control" ng-model="searchType">
+                <option value="block">Block Hash</option>
+                <option value="transaction">Transaction ID</option>
+                <option value="address">Address</option>
+              </select>
+            </div>
+            <button type="submit" class="button">
+              <span>Search</span>
+              <svg>
+                <polyline
+                  class="o1"
+                  points="0 0, 150 0, 150 55, 0 55, 0 0"
+                ></polyline>
+                <polyline
+                  class="o2"
+                  points="0 0, 150 0, 150 55, 0 55, 0 0"
+                ></polyline>
+              </svg>
+            </button>
+            <p
+              ng-if="!block && !transaction && !addressData && initialSearchMade"
+              class="no-data-text"
+            >
+              No data found for search.
+            </p>
+          </form>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-10 offset-md-1">
+          <!-- 'display block' table -->
+          <h3 class="table-title" ng-if="block">Block</h3>
+          <table class="table table-striped" ng-if="block">
+            <tbody>
+              <tr>
+                <td class="bold">Block Hash</td>
+                <td>{{ block.hash }}</td>
+              </tr>
+              <tr>
+                <td class="bold">Index</td>
+                <td>{{ block.index }}</td>
+              </tr>
+              <tr>
+                <td class="bold">Time Stamp</td>
+                <td>{{ block.timestamp }}</td>
+              </tr>
+              <tr>
+                <td class="bold">Nonce</td>
+                <td>{{ block.nonce }}</td>
+              </tr>
+              <tr>
+                <td class="bold">Previous Hash</td>
+                <td>{{ block.previousBlockHash }}</td>
+              </tr>
+              <tr>
+                <td class="bold">Number Transactions</td>
+                <td>{{ block.transactions.length }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- end 'display block' table -->
+
+          <!-- 'display transaction' table -->
+          <h3 class="table-title" ng-if="transaction">Transaction</h3>
+          <table class="table table-striped" ng-if="transaction">
+            <tbody>
+              <tr>
+                <td class="bold">Sender</td>
+                <td>{{ transaction.sender }}</td>
+              </tr>
+              <tr>
+                <td class="bold">Recipient</td>
+                <td>{{ transaction.recipient }}</td>
+              </tr>
+              <tr>
+                <td class="bold">Amount</td>
+                <td>{{ transaction.amount }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- end 'display transaction' table -->
+
+          <!-- 'display address' table -->
+          <h3 class="table-title" ng-if="addressData">Address</h3>
+          <p id="balance-text" ng-if="addressData">
+            (Balance: {{ addressData.addressBalance }})
+          </p>
+          <table class="table table-striped" ng-if="addressData">
+            <thead>
+              <tr>
+                <th scope="col">Sender</th>
+                <th scope="col">Recipient</th>
+                <th scope="col">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="transaction in addressData.addressTransactions">
+                <td>{{ transaction.sender }}</td>
+                <td>{{ transaction.recipient }}</td>
+                <td>{{ transaction.amount }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- end 'display address' table -->
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.app = angular.module("BlockExplorer", []);
+      app.controller("MainController", function($scope, $http) {
+        $scope.block = null;
+        $scope.transaction = null;
+        $scope.addressData = null;
+        $scope.initialSearchMade = false;
+        $scope.fetchBlock = function(blockHash) {
+          $http.get(`/block/${blockHash}`).then(response => {
+            $scope.block = response.data.block;
+            $scope.transaction = null;
+            $scope.addressData = null;
+          });
+        };
+        $scope.fetchTransaction = function(transactionId) {
+          $http.get(`/transaction/${transactionId}`).then(response => {
+            $scope.transaction = response.data.transaction;
+            $scope.block = null;
+            $scope.addressData = null;
+          });
+        };
+        $scope.fetchAddressData = function(address) {
+          $http.get(`/address/${address}`).then(response => {
+            console.log(response.data);
+            $scope.addressData = response.data.addressData;
+            if (!$scope.addressData.addressTransactions.length)
+              $scope.addressData = null;
+            $scope.block = null;
+            $scope.transaction = null;
+          });
+        };
+        $scope.search = function(searchValue) {
+          $scope.initialSearchMade = true;
+          if ($scope.searchType === "block") {
+            $scope.fetchBlock(searchValue);
+          } else if ($scope.searchType === "transaction") {
+            $scope.fetchTransaction(searchValue);
+          } else if ($scope.searchType === "address") {
+            $scope.fetchAddressData(searchValue);
+          }
+        };
+      });
+    </script>
+
+    <style type="text/css">
+      html,
+      body {
+        min-height: 100vh;
+        background-color: #e8e8e8;
+      }
+      .container {
+        padding-top: 50px;
+        padding-bottom: 50px;
+      }
+      #page-title {
+        text-align: center;
+        margin-bottom: 40px;
+        color: white;
+      }
+      .table-title {
+        margin-bottom: 20px;
+        color: white;
+        text-align: center;
+      }
+      .table {
+        background-color: #ffffff;
+        box-shadow: 2px 2px 15px -3px rgba(0, 0, 0, 0.75);
+      }
+      #balance-text {
+        text-align: center;
+        color: white;
+        margin-top: -20px;
+        margin-bottom: 30px;
+      }
+      .margin-auto {
+        margin: auto;
+        display: block;
+      }
+      .btn-search {
+        margin-bottom: 50px;
+      }
+      .bold {
+        font-weight: 700;
+      }
+      .no-data-text {
+        color: white;
+        text-align: center;
+      }
+      @import url("https://fonts.googleapis.com/css?family=Exo:400,700");
+
+      * {
+        margin: 0px;
+        padding: 0px;
+      }
+
+      body {
+        font-family: "Exo", sans-serif;
+      }
+
+      .context {
+        width: 100%;
+        position: absolute;
+        top: 50vh;
+      }
+
+      .context h1 {
+        text-align: center;
+        color: #fff;
+        font-size: 50px;
+      }
+
+      .area {
+        background: #4e54c8;
+        background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);
+        width: 100%;
+        height: 100%;
+        position: absolute;
+      }
+
+      .circles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .circles li {
+        position: absolute;
+        display: block;
+        list-style: none;
+        width: 20px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        animation: animate 25s linear infinite;
+        bottom: -150px;
+      }
+
+      .circles li:nth-child(1) {
+        left: 25%;
+        width: 80px;
+        height: 80px;
+        animation-delay: 0s;
+      }
+
+      .circles li:nth-child(2) {
+        left: 10%;
+        width: 20px;
+        height: 20px;
+        animation-delay: 2s;
+        animation-duration: 12s;
+      }
+
+      .circles li:nth-child(3) {
+        left: 70%;
+        width: 20px;
+        height: 20px;
+        animation-delay: 4s;
+      }
+
+      .circles li:nth-child(4) {
+        left: 40%;
+        width: 60px;
+        height: 60px;
+        animation-delay: 0s;
+        animation-duration: 18s;
+      }
+
+      .circles li:nth-child(5) {
+        left: 65%;
+        width: 20px;
+        height: 20px;
+        animation-delay: 0s;
+      }
+
+      .circles li:nth-child(6) {
+        left: 75%;
+        width: 110px;
+        height: 110px;
+        animation-delay: 3s;
+      }
+
+      .circles li:nth-child(7) {
+        left: 35%;
+        width: 150px;
+        height: 150px;
+        animation-delay: 7s;
+      }
+
+      .circles li:nth-child(8) {
+        left: 50%;
+        width: 25px;
+        height: 25px;
+        animation-delay: 15s;
+        animation-duration: 45s;
+      }
+
+      .circles li:nth-child(9) {
+        left: 20%;
+        width: 15px;
+        height: 15px;
+        animation-delay: 2s;
+        animation-duration: 35s;
+      }
+
+      .circles li:nth-child(10) {
+        left: 85%;
+        width: 150px;
+        height: 150px;
+        animation-delay: 0s;
+        animation-duration: 11s;
+      }
+
+      @keyframes animate {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 1;
+          border-radius: 0;
+        }
+
+        100% {
+          transform: translateY(-1000px) rotate(720deg);
+          opacity: 0;
+          border-radius: 50%;
+        }
+      }
+      @import url("https://fonts.googleapis.com/css?family=Raleway:400,400i,700");
+      .button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      .button svg {
+        height: 55px;
+        width: 150px;
+        fill: none;
+        stroke-width: 5;
+      }
+      .button svg .o1 {
+        stroke: rgba(255, 179, 65, 0.7);
+        fill: #ffa114;
+        transition: all 1s ease-in-out;
+      }
+      .button svg .o2 {
+        stroke: white;
+        stroke-dasharray: 20 420;
+        stroke-dashoffset: 20;
+        transition: all 1s ease-in-out;
+      }
+      .button span {
+        position: absolute;
+        margin: auto 0;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+      }
+      .button:hover .o1 {
+        fill: rgba(204, 129, 16, 0.3);
+      }
+      .button:hover .o2 {
+        stroke-dashoffset: -420;
+      }
+    </style>
+  </body>
+</html>
